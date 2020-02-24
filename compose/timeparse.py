@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 '''
 timeparse.py
 (c) Will Roberts <wildwilhelm@gmail.com>  1 February, 2014
@@ -31,9 +30,6 @@ https://golang.org/pkg/time/#ParseDuration
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import re
 
 HOURS = r'(?P<hours>[\d.]+)h'
@@ -93,4 +89,4 @@ def timeparse(sval):
 
 
 def cast(value):
-    return int(value, 10) if value.isdigit() else float(value)
+    return int(value) if value.isdigit() else float(value)

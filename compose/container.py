@@ -1,9 +1,5 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from functools import reduce
 
-import six
 from docker.errors import ImageNotFound
 
 from .const import LABEL_CONTAINER_NUMBER
@@ -16,7 +12,7 @@ from .utils import truncate_id
 from .version import ComposeVersion
 
 
-class Container(object):
+class Container:
     """
     Represents a Docker container, constructed from the output of
     GET /containers/:id:/json.
@@ -130,7 +126,7 @@ class Container(object):
 
         return ', '.join(
             ','.join(format_port(*item))
-            for item in sorted(six.iteritems(self.ports))
+            for item in sorted(self.ports.items())
         )
 
     @property

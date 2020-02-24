@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import os
 import platform
 import ssl
@@ -233,7 +230,7 @@ class TLSConfigTestCase(unittest.TestCase):
         assert result.cert == (self.client_cert, self.key)
 
 
-class TestGetTlsVersion(object):
+class TestGetTlsVersion:
     def test_get_tls_version_default(self):
         environment = {}
         assert get_tls_version(environment) is None

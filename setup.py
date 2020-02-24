@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import codecs
 import os
 import re
@@ -38,7 +33,6 @@ install_requires = [
     'websocket-client >= 0.32.0, < 1',
     'docker[ssh] >= 3.7.0, < 5',
     'dockerpty >= 0.4.1, < 1',
-    'six >= 1.3.0, < 2',
     'jsonschema >= 2.5.1, < 4',
 ]
 
@@ -97,7 +91,7 @@ setup(
     install_requires=install_requires,
     extras_require=extras_require,
     tests_require=tests_require,
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
+    python_requires='>=3.0, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     entry_points={
         'console_scripts': ['docker-compose=compose.cli.main:main'],
     },
@@ -106,8 +100,6 @@ setup(
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.6',

@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import logging
 import re
 from collections import OrderedDict
@@ -27,7 +24,7 @@ OPTS_EXCEPTIONS = [
 ]
 
 
-class Network(object):
+class Network:
     def __init__(self, client, project, name, driver=None, driver_opts=None,
                  ipam=None, external=False, internal=False, enable_ipv6=False,
                  labels=None, custom_name=False):
@@ -170,7 +167,7 @@ def create_ipam_config_from_dict(ipam_dict):
 
 class NetworkConfigChangedError(ConfigurationError):
     def __init__(self, net_name, property_name):
-        super(NetworkConfigChangedError, self).__init__(
+        super().__init__(
             'Network "{}" needs to be recreated - {} has changed'.format(
                 net_name, property_name
             )
@@ -261,7 +258,7 @@ def build_networks(name, config_data, client):
     return networks
 
 
-class ProjectNetworks(object):
+class ProjectNetworks:
 
     def __init__(self, networks, use_networking):
         self.networks = networks or {}

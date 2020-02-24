@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import pytest
 from docker.errors import APIError
 from requests.exceptions import ConnectionError
@@ -24,7 +21,7 @@ def patch_find_executable(side_effect):
         side_effect=side_effect)
 
 
-class TestHandleConnectionErrors(object):
+class TestHandleConnectionErrors:
 
     def test_generic_connection_error(self, mock_logging):
         with pytest.raises(errors.ConnectionError):

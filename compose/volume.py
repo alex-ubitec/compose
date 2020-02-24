@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import logging
 import re
 
@@ -18,7 +15,7 @@ from .const import LABEL_VOLUME
 log = logging.getLogger(__name__)
 
 
-class Volume(object):
+class Volume:
     def __init__(self, client, project, name, driver=None, driver_opts=None,
                  external=False, labels=None, custom_name=False):
         self.client = client
@@ -99,7 +96,7 @@ class Volume(object):
             self.legacy = False
 
 
-class ProjectVolumes(object):
+class ProjectVolumes:
 
     def __init__(self, volumes):
         self.volumes = volumes
@@ -177,7 +174,7 @@ class ProjectVolumes(object):
 
 class VolumeConfigChangedError(ConfigurationError):
     def __init__(self, local, property_name, local_value, remote_value):
-        super(VolumeConfigChangedError, self).__init__(
+        super().__init__(
             'Configuration for volume {vol_name} specifies {property_name} '
             '{local_value}, but a volume with the same name uses a different '
             '{property_name} ({remote_value}). If you wish to use the new '

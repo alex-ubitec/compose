@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import logging
 
 import docker
@@ -35,7 +32,7 @@ def logging_handler():
     return logging.StreamHandler(stream=stream)
 
 
-class TestCLIMainTestCase(object):
+class TestCLIMainTestCase:
 
     def test_filter_attached_containers(self):
         containers = [
@@ -138,7 +135,7 @@ class TestCLIMainTestCase(object):
         assert expected_docker_start_call == docker_start_call
 
 
-class TestSetupConsoleHandlerTestCase(object):
+class TestSetupConsoleHandlerTestCase:
 
     def test_with_tty_verbose(self, logging_handler):
         setup_console_handler(logging_handler, True)
@@ -158,7 +155,7 @@ class TestSetupConsoleHandlerTestCase(object):
         assert type(logging_handler.formatter) == logging.Formatter
 
 
-class TestConvergeStrategyFromOptsTestCase(object):
+class TestConvergeStrategyFromOptsTestCase:
 
     def test_invalid_opts(self):
         options = {'--force-recreate': True, '--no-recreate': True}
@@ -192,7 +189,7 @@ def mock_find_executable(exe):
 
 
 @mock.patch('compose.cli.main.find_executable', mock_find_executable)
-class TestCallDocker(object):
+class TestCallDocker:
     def test_simple_no_options(self):
         with mock.patch('subprocess.call') as fake_call:
             call_docker(['ps'], {}, {})

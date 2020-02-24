@@ -1,8 +1,3 @@
-# encoding: utf-8
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import codecs
 import os
 import shutil
@@ -3836,7 +3831,7 @@ class VolumeConfigTest(unittest.TestCase):
         assert container_path == volume
 
 
-class MergePathMappingTest(object):
+class MergePathMappingTest:
     config_name = ""
 
     def test_empty(self):
@@ -3909,7 +3904,7 @@ class BuildOrImageMergeTest(unittest.TestCase):
         assert config.merge_service_dicts({'image': 'redis'}, {'build': '.'}, V1) == {'build': '.'}
 
 
-class MergeListsTest(object):
+class MergeListsTest:
     config_name = ""
     base_config = []
     override_config = []

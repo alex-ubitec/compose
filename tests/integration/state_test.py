@@ -2,9 +2,6 @@
 Integration tests which cover state convergence (aka smart recreate) performed
 by `docker-compose up`.
 """
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import copy
 import os
 import shutil
@@ -42,7 +39,7 @@ class ProjectTestCase(DockerClientTestCase):
 
 class BasicProjectTest(ProjectTestCase):
     def setUp(self):
-        super(BasicProjectTest, self).setUp()
+        super().setUp()
 
         self.cfg = {
             'db': {'image': BUSYBOX_IMAGE_WITH_TAG, 'command': 'top'},
@@ -98,7 +95,7 @@ class BasicProjectTest(ProjectTestCase):
 
 class ProjectWithDependenciesTest(ProjectTestCase):
     def setUp(self):
-        super(ProjectWithDependenciesTest, self).setUp()
+        super().setUp()
 
         self.cfg = {
             'db': {
@@ -216,7 +213,7 @@ class ProjectWithDependenciesTest(ProjectTestCase):
 
 class ProjectWithDependsOnDependenciesTest(ProjectTestCase):
     def setUp(self):
-        super(ProjectWithDependsOnDependenciesTest, self).setUp()
+        super().setUp()
 
         self.cfg = {
             'version': '2',

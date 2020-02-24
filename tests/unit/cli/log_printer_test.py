@@ -1,13 +1,10 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import itertools
+from io import StringIO
+from queue import Queue
 
 import pytest
 import requests
-import six
 from docker.errors import APIError
-from six.moves.queue import Queue
 
 from compose.cli.log_printer import build_log_generator
 from compose.cli.log_printer import build_log_presenters
@@ -22,7 +19,7 @@ from tests import mock
 
 @pytest.fixture
 def output_stream():
-    output = six.StringIO()
+    output = StringIO()
     output.flush = mock.Mock()
     return output
 
@@ -32,7 +29,7 @@ def mock_container():
     return mock.Mock(spec=Container, name_without_project='web_1')
 
 
-class TestLogPresenter(object):
+class TestLogPresenter:
 
     def test_monochrome(self, mock_container):
         presenters = build_log_presenters(['foo', 'bar'], True)
@@ -86,7 +83,7 @@ def test_build_no_log_generator(mock_container):
     assert "exited with code" not in output
 
 
-class TestBuildLogGenerator(object):
+class TestBuildLogGenerator:
 
     def test_no_log_stream(self, mock_container):
         mock_container.log_stream = None
@@ -128,7 +125,7 @@ def mock_presenters():
     return itertools.cycle([mock.Mock()])
 
 
-class TestWatchEvents(object):
+class TestWatchEvents:
 
     def test_stop_event(self, thread_map, mock_presenters):
         event_stream = [{'action': 'stop', 'id': 'cid'}]
@@ -170,7 +167,7 @@ class TestWatchEvents(object):
         assert container_id not in thread_map
 
 
-class TestConsumeQueue(object):
+class TestConsumeQueue:
 
     def test_item_is_an_exception(self):
 

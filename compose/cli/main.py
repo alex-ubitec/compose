@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import contextlib
 import functools
 import json
@@ -180,7 +176,7 @@ def parse_doc_section(name, source):
     return [s.strip() for s in pattern.findall(source)]
 
 
-class TopLevelCommand(object):
+class TopLevelCommand:
     """Define and run multi-container applications with Docker.
 
     Usage:

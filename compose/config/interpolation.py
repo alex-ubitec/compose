@@ -1,11 +1,6 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import logging
 import re
 from string import Template
-
-import six
 
 from .errors import ConfigurationError
 from compose.const import COMPOSEFILE_V2_0 as V2_0
@@ -16,7 +11,7 @@ from compose.utils import parse_nanoseconds_int
 log = logging.getLogger(__name__)
 
 
-class Interpolator(object):
+class Interpolator:
 
     def __init__(self, templater, mapping):
         self.templater = templater
@@ -77,7 +72,7 @@ def recursive_interpolate(obj, interpolator, config_path):
     def append(config_path, key):
         return '{}/{}'.format(config_path, key)
 
-    if isinstance(obj, six.string_types):
+    if isinstance(obj, str):
         return converter.convert(config_path, interpolator.interpolate(obj))
     if isinstance(obj, dict):
         return dict(
@@ -138,7 +133,7 @@ class TemplateWithDefaults(Template):
 
             if named is not None:
                 val = mapping[named]
-                if isinstance(val, six.binary_type):
+                if isinstance(val, bytes):
                     val = val.decode('utf-8')
                 return '%s' % (val,)
             if mo.group('escaped') is not None:
@@ -177,7 +172,7 @@ def service_path(*args):
 
 
 def to_boolean(s):
-    if not isinstance(s, six.string_types):
+    if not isinstance(s, str):
         return s
     s = s.lower()
     if s in ['y', 'yes', 'true', 'on']:
@@ -188,11 +183,11 @@ def to_boolean(s):
 
 
 def to_int(s):
-    if not isinstance(s, six.string_types):
+    if not isinstance(s, str):
         return s
 
     # We must be able to handle octal representation for `mode` values notably
-    if six.PY3 and re.match('^0[0-9]+$', s.strip()):
+    if re.match('^0[0-9]+$', s.strip()):
         s = '0o' + s[1:]
     try:
         return int(s, base=0)
@@ -201,7 +196,7 @@ def to_int(s):
 
 
 def to_float(s):
-    if not isinstance(s, six.string_types):
+    if not isinstance(s, str):
         return s
 
     try:
@@ -224,12 +219,12 @@ def bytes_to_int(s):
 
 
 def to_microseconds(v):
-    if not isinstance(v, six.string_types):
+    if not isinstance(v, str):
         return v
     return int(parse_nanoseconds_int(v) / 1000)
 
 
-class ConversionMap(object):
+class ConversionMap:
     map = {
         service_path('blkio_config', 'weight'): to_int,
         service_path('blkio_config', 'weight_device', 'weight'): to_int,

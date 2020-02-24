@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import datetime
 import json
 import os.path
@@ -15,7 +11,6 @@ from functools import reduce
 from operator import attrgetter
 
 import pytest
-import six
 import yaml
 from docker import errors
 
@@ -103,7 +98,7 @@ def kill_service(service):
             container.kill()
 
 
-class ContainerCountCondition(object):
+class ContainerCountCondition:
 
     def __init__(self, project, expected):
         self.project = project
@@ -116,7 +111,7 @@ class ContainerCountCondition(object):
         return "waiting for counter count == %s" % self.expected
 
 
-class ContainerStateCondition(object):
+class ContainerStateCondition:
 
     def __init__(self, client, name, status):
         self.client = client
@@ -144,7 +139,7 @@ class ContainerStateCondition(object):
 class CLITestCase(DockerClientTestCase):
 
     def setUp(self):
-        super(CLITestCase, self).setUp()
+        super().setUp()
         self.base_dir = 'tests/fixtures/simple-composefile'
         self.override_dir = None
 
@@ -166,7 +161,7 @@ class CLITestCase(DockerClientTestCase):
         if hasattr(self, '_project'):
             del self._project
 
-        super(CLITestCase, self).tearDown()
+        super().tearDown()
 
     @property
     def project(self):
@@ -2220,15 +2215,9 @@ services:
     @mock.patch.dict(os.environ)
     def test_run_unicode_env_values_from_system(self):
         value = 'ą, ć, ę, ł, ń, ó, ś, ź, ż'
-        if six.PY2:  # os.environ doesn't support unicode values in Py2
-            os.environ['BAR'] = value.encode('utf-8')
-        else:  # ... and doesn't support byte values in Py3
-            os.environ['BAR'] = value
+        os.environ['BAR'] = value
         self.base_dir = 'tests/fixtures/unicode-environment'
-        result = self.dispatch(['run', 'simple'])
-
-        if six.PY2:  # Can't retrieve output on Py3. See issue #3670
-            assert value in result.stdout.strip()
+        self.dispatch(['run', 'simple'])
 
         container = self.project.containers(one_off=OneOffFilter.only, stopped=True)[0]
         environment = container.get('Config.Env')

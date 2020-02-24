@@ -1,23 +1,19 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
+import _thread as thread
 import sys
 from collections import namedtuple
 from itertools import cycle
+from queue import Empty
+from queue import Queue
 from threading import Thread
 
 from docker.errors import APIError
-from six.moves import _thread as thread
-from six.moves.queue import Empty
-from six.moves.queue import Queue
 
 from . import colors
-from compose import utils
 from compose.cli.signals import ShutdownException
 from compose.utils import split_buffer
 
 
-class LogPresenter(object):
+class LogPresenter:
 
     def __init__(self, prefix_width, color_func):
         self.prefix_width = prefix_width
@@ -54,7 +50,7 @@ def max_name_width(service_names, max_index_width=3):
     return max(len(name) for name in service_names) + max_index_width
 
 
-class LogPrinter(object):
+class LogPrinter:
     """Print logs from many containers to a single output stream."""
 
     def __init__(self,
@@ -67,7 +63,7 @@ class LogPrinter(object):
         self.containers = containers
         self.presenters = presenters
         self.event_stream = event_stream
-        self.output = utils.get_output_stream(output)
+        self.output = output
         self.cascade_stop = cascade_stop
         self.log_args = log_args or {}
 

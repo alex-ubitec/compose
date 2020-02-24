@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import pytest
 
 from compose.config.errors import ConfigurationError
@@ -42,7 +39,7 @@ def test_parse_extra_hosts_dict():
     }
 
 
-class TestServicePort(object):
+class TestServicePort:
     def test_parse_dict(self):
         data = {
             'target': 8000,
@@ -132,7 +129,7 @@ class TestServicePort(object):
             ServicePort.parse(port_def)
 
 
-class TestVolumeSpec(object):
+class TestVolumeSpec:
 
     def test_parse_volume_spec_only_one_path(self):
         spec = VolumeSpec.parse('/the/volume')
@@ -219,7 +216,7 @@ class TestVolumeSpec(object):
         )
 
 
-class TestVolumesFromSpec(object):
+class TestVolumesFromSpec:
 
     services = ['servicea', 'serviceb']
 
