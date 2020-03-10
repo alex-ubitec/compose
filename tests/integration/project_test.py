@@ -303,19 +303,19 @@ class ProjectTest(DockerClientTestCase):
         db_container = db.create_container()
 
         project.start(service_names=['web'])
-        assert set(c.name for c in project.containers() if c.is_running) == {
+        assert {c.name for c in project.containers() if c.is_running} == {
             web_container_1.name, web_container_2.name}
 
         project.start()
-        assert set(c.name for c in project.containers() if c.is_running) == {
+        assert {c.name for c in project.containers() if c.is_running} == {
             web_container_1.name, web_container_2.name, db_container.name}
 
         project.pause(service_names=['web'])
-        assert set([c.name for c in project.containers() if c.is_paused]) == {
+        assert {c.name for c in project.containers() if c.is_paused} == {
             web_container_1.name, web_container_2.name}
 
         project.pause()
-        assert set([c.name for c in project.containers() if c.is_paused]) == {
+        assert {c.name for c in project.containers() if c.is_paused} == {
             web_container_1.name, web_container_2.name, db_container.name}
 
         project.unpause(service_names=['db'])
@@ -325,7 +325,7 @@ class ProjectTest(DockerClientTestCase):
         assert len([c.name for c in project.containers() if c.is_paused]) == 0
 
         project.stop(service_names=['web'], timeout=1)
-        assert set(c.name for c in project.containers() if c.is_running) == {db_container.name}
+        assert {c.name for c in project.containers() if c.is_running} == {db_container.name}
 
         project.kill(service_names=['db'])
         assert len([c for c in project.containers() if c.is_running]) == 0
@@ -1225,8 +1225,8 @@ class ProjectTest(DockerClientTestCase):
 
     @v2_only()
     def test_project_up_volumes(self):
-        vol_name = '{0:x}'.format(random.getrandbits(32))
-        full_vol_name = 'composetest_{0}'.format(vol_name)
+        vol_name = '{:x}'.format(random.getrandbits(32))
+        full_vol_name = 'composetest_{}'.format(vol_name)
         config_data = build_config(
             version=V2_0,
             services=[{
@@ -1283,9 +1283,9 @@ class ProjectTest(DockerClientTestCase):
             if v['Name'].split('/')[-1].startswith('composetest_')
         ]
 
-        assert set([v['Name'].split('/')[-1] for v in volumes]) == set(
-            ['composetest_{}'.format(volume_name)]
-        )
+        assert {v['Name'].split('/')[-1] for v in volumes} == {
+            'composetest_{}'.format(volume_name)
+        }
 
         assert 'label_key' in volumes[0]['Labels']
         assert volumes[0]['Labels']['label_key'] == 'label_val'
@@ -1408,8 +1408,8 @@ class ProjectTest(DockerClientTestCase):
 
     @v2_only()
     def test_initialize_volumes(self):
-        vol_name = '{0:x}'.format(random.getrandbits(32))
-        full_vol_name = 'composetest_{0}'.format(vol_name)
+        vol_name = '{:x}'.format(random.getrandbits(32))
+        full_vol_name = 'composetest_{}'.format(vol_name)
         config_data = build_config(
             version=V2_0,
             services=[{
@@ -1432,8 +1432,8 @@ class ProjectTest(DockerClientTestCase):
 
     @v2_only()
     def test_project_up_implicit_volume_driver(self):
-        vol_name = '{0:x}'.format(random.getrandbits(32))
-        full_vol_name = 'composetest_{0}'.format(vol_name)
+        vol_name = '{:x}'.format(random.getrandbits(32))
+        full_vol_name = 'composetest_{}'.format(vol_name)
         config_data = build_config(
             version=V2_0,
             services=[{
@@ -1547,7 +1547,7 @@ class ProjectTest(DockerClientTestCase):
 
     @v2_only()
     def test_initialize_volumes_invalid_volume_driver(self):
-        vol_name = '{0:x}'.format(random.getrandbits(32))
+        vol_name = '{:x}'.format(random.getrandbits(32))
 
         config_data = build_config(
             version=V2_0,
@@ -1569,8 +1569,8 @@ class ProjectTest(DockerClientTestCase):
     @v2_only()
     @no_cluster('inspect volume by name defect on Swarm Classic')
     def test_initialize_volumes_updated_driver(self):
-        vol_name = '{0:x}'.format(random.getrandbits(32))
-        full_vol_name = 'composetest_{0}'.format(vol_name)
+        vol_name = '{:x}'.format(random.getrandbits(32))
+        full_vol_name = 'composetest_{}'.format(vol_name)
 
         config_data = build_config(
             version=V2_0,
@@ -1601,15 +1601,15 @@ class ProjectTest(DockerClientTestCase):
         )
         with pytest.raises(config.ConfigurationError) as e:
             project.volumes.initialize()
-        assert 'Configuration for volume {0} specifies driver smb'.format(
+        assert 'Configuration for volume {} specifies driver smb'.format(
             vol_name
         ) in str(e.value)
 
     @v2_only()
     @no_cluster('inspect volume by name defect on Swarm Classic')
     def test_initialize_volumes_updated_driver_opts(self):
-        vol_name = '{0:x}'.format(random.getrandbits(32))
-        full_vol_name = 'composetest_{0}'.format(vol_name)
+        vol_name = '{:x}'.format(random.getrandbits(32))
+        full_vol_name = 'composetest_{}'.format(vol_name)
         tmpdir = tempfile.mkdtemp(prefix='compose_test_')
         self.addCleanup(shutil.rmtree, tmpdir)
         driver_opts = {'o': 'bind', 'device': tmpdir, 'type': 'none'}
@@ -1647,14 +1647,14 @@ class ProjectTest(DockerClientTestCase):
         )
         with pytest.raises(config.ConfigurationError) as e:
             project.volumes.initialize()
-        assert 'Configuration for volume {0} specifies "device" driver_opt {1}'.format(
+        assert 'Configuration for volume {} specifies "device" driver_opt {}'.format(
             vol_name, driver_opts['device']
         ) in str(e.value)
 
     @v2_only()
     def test_initialize_volumes_updated_blank_driver(self):
-        vol_name = '{0:x}'.format(random.getrandbits(32))
-        full_vol_name = 'composetest_{0}'.format(vol_name)
+        vol_name = '{:x}'.format(random.getrandbits(32))
+        full_vol_name = 'composetest_{}'.format(vol_name)
 
         config_data = build_config(
             version=V2_0,
@@ -1692,8 +1692,8 @@ class ProjectTest(DockerClientTestCase):
     @no_cluster('inspect volume by name defect on Swarm Classic')
     def test_initialize_volumes_external_volumes(self):
         # Use composetest_ prefix so it gets garbage-collected in tearDown()
-        vol_name = 'composetest_{0:x}'.format(random.getrandbits(32))
-        full_vol_name = 'composetest_{0}'.format(vol_name)
+        vol_name = 'composetest_{:x}'.format(random.getrandbits(32))
+        full_vol_name = 'composetest_{}'.format(vol_name)
         self.client.create_volume(vol_name)
         config_data = build_config(
             version=V2_0,
@@ -1717,7 +1717,7 @@ class ProjectTest(DockerClientTestCase):
 
     @v2_only()
     def test_initialize_volumes_inexistent_external_volume(self):
-        vol_name = '{0:x}'.format(random.getrandbits(32))
+        vol_name = '{:x}'.format(random.getrandbits(32))
 
         config_data = build_config(
             version=V2_0,
@@ -1736,14 +1736,14 @@ class ProjectTest(DockerClientTestCase):
         )
         with pytest.raises(config.ConfigurationError) as e:
             project.volumes.initialize()
-        assert 'Volume {0} declared as external'.format(
+        assert 'Volume {} declared as external'.format(
             vol_name
         ) in str(e.value)
 
     @v2_only()
     def test_project_up_named_volumes_in_binds(self):
-        vol_name = '{0:x}'.format(random.getrandbits(32))
-        full_vol_name = 'composetest_{0}'.format(vol_name)
+        vol_name = '{:x}'.format(random.getrandbits(32))
+        full_vol_name = 'composetest_{}'.format(vol_name)
 
         base_file = config.ConfigFile(
             'base.yml',
@@ -1753,7 +1753,7 @@ class ProjectTest(DockerClientTestCase):
                     'simple': {
                         'image': BUSYBOX_IMAGE_WITH_TAG,
                         'command': 'top',
-                        'volumes': ['{0}:/data'.format(vol_name)]
+                        'volumes': ['{}:/data'.format(vol_name)]
                     },
                 },
                 'volumes': {

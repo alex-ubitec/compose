@@ -1,5 +1,3 @@
-
-
 VERSION_EXPLANATION = (
     'You might be seeing this error because you\'re using the wrong Compose file version. '
     'Either specify a supported version (e.g "2.2" or "3.3") and place '

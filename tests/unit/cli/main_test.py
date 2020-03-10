@@ -22,7 +22,7 @@ def mock_container(service, number):
         container.Container,
         service=service,
         number=number,
-        name_without_project='{0}_{1}'.format(service, number))
+        name_without_project='{}_{}'.format(service, number))
 
 
 @pytest.fixture

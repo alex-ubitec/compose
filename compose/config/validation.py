@@ -100,7 +100,7 @@ def match_named_volumes(service_dict, project_volumes):
     for volume_spec in service_volumes:
         if volume_spec.is_named_volume and volume_spec.external not in project_volumes:
             raise ConfigurationError(
-                'Named volume "{0}" is used in service "{1}" but no'
+                'Named volume "{}" is used in service "{}" but no'
                 ' declaration was found in the volumes section.'.format(
                     volume_spec.repr(), service_dict.get('name')
                 )
@@ -475,14 +475,14 @@ def get_schema_path():
 def load_jsonschema(config_file):
     filename = os.path.join(
         get_schema_path(),
-        "config_schema_v{0}.json".format(config_file.version))
+        "config_schema_v{}.json".format(config_file.version))
 
     if not os.path.exists(filename):
         raise ConfigurationError(
             'Version in "{}" is unsupported. {}'
             .format(config_file.filename, VERSION_EXPLANATION))
 
-    with open(filename, "r") as fh:
+    with open(filename) as fh:
         return json.load(fh)
 
 
@@ -502,7 +502,7 @@ def handle_errors(errors, format_error_func, filename):
     gone wrong. Process each error and pull out relevant information and re-write
     helpful error messages that are relevant.
     """
-    errors = list(sorted(errors, key=str))
+    errors = sorted(errors, key=str)
     if not errors:
         return
 

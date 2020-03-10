@@ -59,6 +59,7 @@ from .utils import truncate_id
 from .utils import unique_everseen
 from compose.cli.utils import binarystr_to_unicode
 
+
 log = logging.getLogger(__name__)
 
 HOST_CONFIG_KEYS = [
@@ -227,10 +228,10 @@ class Service:
         """Return a :class:`compose.container.Container` for this service. The
         container must be active, and match `number`.
         """
-        for container in self.containers(labels=['{0}={1}'.format(LABEL_CONTAINER_NUMBER, number)]):
+        for container in self.containers(labels=['{}={}'.format(LABEL_CONTAINER_NUMBER, number)]):
             return container
 
-        raise ValueError("No container found for %s_%s" % (self.name, number))
+        raise ValueError("No container found for {}_{}".format(self.name, number))
 
     def start(self, **options):
         containers = self.containers(stopped=True)
@@ -620,7 +621,7 @@ class Service:
             expl = binarystr_to_unicode(ex.explanation)
             if "driver failed programming external connectivity" in expl:
                 log.warn("Host is already in use by another container")
-            raise OperationFailedError("Cannot start service %s: %s" % (self.name, expl))
+            raise OperationFailedError("Cannot start service {}: {}".format(self.name, expl))
         return container
 
     @property
@@ -711,12 +712,12 @@ class Service:
         net_name = self.network_mode.service_name
         pid_namespace = self.pid_mode.service_name
 
-        configs = dict(
-            [(name, None) for name in self.get_linked_service_names()]
+        configs = {
+            name: None for name in self.get_linked_service_names()
+        }
+        configs.update(
+            (name, None) for name in self.get_volumes_from_names()
         )
-        configs.update(dict(
-            [(name, None) for name in self.get_volumes_from_names()]
-        ))
         configs.update({net_name: None} if net_name else {})
         configs.update({pid_namespace: None} if pid_namespace else {})
         configs.update(self.options.get('depends_on', {}))
@@ -837,9 +838,9 @@ class Service:
         add_config_hash = (not one_off and not override_options)
         slug = generate_random_id() if one_off else None
 
-        container_options = dict(
-            (k, self.options[k])
-            for k in DOCKER_CONFIG_KEYS if k in self.options)
+        container_options = {
+            k: self.options[k]
+            for k in DOCKER_CONFIG_KEYS if k in self.options}
         override_volumes = override_options.pop('volumes', [])
         container_options.update(override_options)
 
@@ -931,7 +932,7 @@ class Service:
         )
         container_options['environment'].update(affinity)
 
-        container_options['volumes'] = dict((v.internal, {}) for v in container_volumes or {})
+        container_options['volumes'] = {v.internal: {} for v in container_volumes or {}}
         if version_gte(self.client.api_version, '1.30'):
             override_options['mounts'] = [build_mount(v) for v in container_mounts] or None
         else:
@@ -1133,9 +1134,9 @@ class Service:
     def labels(self, one_off=False, legacy=False):
         proj_name = self.project if not legacy else re.sub(r'[_-]', '', self.project)
         return [
-            '{0}={1}'.format(LABEL_PROJECT, proj_name),
-            '{0}={1}'.format(LABEL_SERVICE, self.name),
-            '{0}={1}'.format(LABEL_ONE_OFF, "True" if one_off else "False"),
+            '{}={}'.format(LABEL_PROJECT, proj_name),
+            '{}={}'.format(LABEL_SERVICE, self.name),
+            '{}={}'.format(LABEL_ONE_OFF, "True" if one_off else "False"),
         ]
 
     @property
@@ -1152,7 +1153,7 @@ class Service:
         ext_links_origins = [l.split(':')[0] for l in self.options.get('external_links', [])]
         if container_name in ext_links_origins:
             raise DependencyError(
-                'Service {0} has a self-referential external link: {1}'.format(
+                'Service {} has a self-referential external link: {}'.format(
                     self.name, container_name
                 )
             )
@@ -1207,11 +1208,9 @@ class Service:
             output = self.client.pull(repo, **pull_kwargs)
             if silent:
                 with open(os.devnull, 'w') as devnull:
-                    for event in stream_output(output, devnull):
-                        yield event
+                    yield from stream_output(output, devnull)
             else:
-                for event in stream_output(output, sys.stdout):
-                    yield event
+                yield from stream_output(output, sys.stdout)
         except (StreamOutputError, NotFound) as e:
             if not ignore_pull_failures:
                 raise
@@ -1229,7 +1228,7 @@ class Service:
             'platform': self.platform,
         }
         if not silent:
-            log.info('Pulling %s (%s%s%s)...' % (self.name, repo, separator, tag))
+            log.info('Pulling {} ({}{}{})...'.format(self.name, repo, separator, tag))
 
         if kwargs['platform'] and version_lt(self.client.api_version, '1.35'):
             raise OperationFailedError(
@@ -1247,7 +1246,7 @@ class Service:
 
         repo, tag, separator = parse_repository_tag(self.options['image'])
         tag = tag or 'latest'
-        log.info('Pushing %s (%s%s%s)...' % (self.name, repo, separator, tag))
+        log.info('Pushing {} ({}{}{})...'.format(self.name, repo, separator, tag))
         output = self.client.push(repo, tag=tag, stream=True)
 
         try:
@@ -1486,10 +1485,10 @@ def get_container_data_volumes(container, volumes_option, tmpfs_option, mounts_o
     volumes = []
     volumes_option = volumes_option or []
 
-    container_mounts = dict(
-        (mount['Destination'], mount)
+    container_mounts = {
+        mount['Destination']: mount
         for mount in container.get('Mounts') or {}
-    )
+    }
 
     image_volumes = [
         VolumeSpec.parse(volume)
@@ -1541,9 +1540,9 @@ def get_container_data_volumes(container, volumes_option, tmpfs_option, mounts_o
 
 
 def warn_on_masked_volume(volumes_option, container_volumes, service):
-    container_volumes = dict(
-        (volume.internal, volume.external)
-        for volume in container_volumes)
+    container_volumes = {
+        volume.internal: volume.external
+        for volume in container_volumes}
 
     for volume in volumes_option:
         if (
@@ -1693,7 +1692,7 @@ def convert_blkio_config(blkio_config):
             continue
         arr = []
         for item in blkio_config[field]:
-            arr.append(dict([(k.capitalize(), v) for k, v in item.items()]))
+            arr.append({k.capitalize(): v for k, v in item.items()})
         result[field] = arr
     return result
 
