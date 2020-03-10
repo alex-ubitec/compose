@@ -32,16 +32,18 @@ https://golang.org/pkg/time/#ParseDuration
 # SOFTWARE.
 import re
 
-HOURS = r'(?P<hours>[\d.]+)h'
-MINS = r'(?P<mins>[\d.]+)m'
-SECS = r'(?P<secs>[\d.]+)s'
-MILLI = r'(?P<milli>[\d.]+)ms'
-MICRO = r'(?P<micro>[\d.]+)(?:us|µs)'
-NANO = r'(?P<nano>[\d.]+)ns'
+FLOAT_NUMBER = r"(?:\d+\.?\d*|\.\d+)"
+
+HOURS = r'(?P<hours>{})h'.format(FLOAT_NUMBER)
+MINS = r'(?P<mins>{})m'.format(FLOAT_NUMBER)
+SECS = r'(?P<secs>{})s'.format(FLOAT_NUMBER)
+MILLI = r'(?P<milli>{})ms'.format(FLOAT_NUMBER)
+MICRO = r'(?P<micro>{})(?:us|µs)'.format(FLOAT_NUMBER)
+NANO = r'(?P<nano>{})ns'.format(FLOAT_NUMBER)
 
 
 def opt(x):
-    return r'(?:{x})?'.format(x=x)
+    return '(?:{})?'.format(x)
 
 
 TIMEFORMAT = r'{HOURS}{MINS}{SECS}{MILLI}{MICRO}{NANO}'.format(
@@ -53,14 +55,14 @@ TIMEFORMAT = r'{HOURS}{MINS}{SECS}{MILLI}{MICRO}{NANO}'.format(
     NANO=opt(NANO),
 )
 
-MULTIPLIERS = dict([
-    ('hours',   60 * 60),
-    ('mins',    60),
-    ('secs',    1),
-    ('milli',   1.0 / 1000),
-    ('micro',   1.0 / 1000.0 / 1000),
-    ('nano',    1.0 / 1000.0 / 1000.0 / 1000.0),
-])
+MULTIPLIERS = {
+    'hours':    60.0 * 60,
+    'mins':     60.0,
+    'secs':     1.0,
+    'milli':    1.0 / 1000,
+    'micro':    1.0 / 1000**2,
+    'nano':     1.0 / 1000**3,
+}
 
 
 def timeparse(sval):
@@ -78,14 +80,18 @@ def timeparse(sval):
     72
     >>> timeparse('1.2 seconds')
     1.2
+    >>> timeparse('1.5 ns')
+    1.5e-09
+    >>> timeparse('otherstring')
+    None
     """
     match = re.match(r'\s*' + TIMEFORMAT + r'\s*$', sval, re.I)
     if not match or not match.group(0).strip():
         return
-
     mdict = match.groupdict()
     return sum(
-        MULTIPLIERS[k] * cast(v) for (k, v) in mdict.items() if v is not None)
+        MULTIPLIERS[k] * cast(v) for (k, v) in mdict.items() if v is not None
+        )
 
 
 def cast(value):

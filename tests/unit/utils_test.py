@@ -24,7 +24,7 @@ class TestStreamAsText:
         assert output == '���'
 
     def test_stream_with_utf_character(self):
-        stream = ['ěĝ'.encode('utf-8')]
+        stream = ['ěĝ'.encode()]
         output, = utils.stream_as_text(stream)
         assert output == 'ěĝ'
 

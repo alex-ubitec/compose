@@ -108,7 +108,7 @@ class TestBuildLogGenerator:
         assert next(generator) == "world"
 
     def test_unicode(self, output_stream):
-        glyph = u'\u2022\n'
+        glyph = '\u2022\n'
         mock_container.log_stream = iter([glyph.encode('utf-8')])
 
         generator = build_log_generator(mock_container, {})

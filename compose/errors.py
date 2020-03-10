@@ -1,5 +1,3 @@
-
-
 class OperationFailedError(Exception):
     def __init__(self, reason):
         self.msg = reason

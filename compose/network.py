@@ -1,6 +1,7 @@
 import logging
 import re
 from collections import OrderedDict
+from operator import itemgetter
 
 from docker.errors import NotFound
 from docker.types import IPAMConfig
@@ -51,7 +52,7 @@ class Network:
             try:
                 self.inspect()
                 log.debug(
-                    'Network {0} declared as external. No new '
+                    'Network {} declared as external. No new '
                     'network will be created.'.format(self.name)
                 )
             except NotFound:
@@ -107,7 +108,7 @@ class Network:
     def legacy_full_name(self):
         if self.custom_name:
             return self.name
-        return '{0}_{1}'.format(
+        return '{}_{}'.format(
             re.sub(r'[_-]', '', self.project), self.name
         )
 
@@ -115,7 +116,7 @@ class Network:
     def full_name(self):
         if self.custom_name:
             return self.name
-        return '{0}_{1}'.format(self.project, self.name)
+        return '{}_{}'.format(self.project, self.name)
 
     @property
     def true_name(self):
@@ -299,10 +300,10 @@ def get_network_defs_for_service(service_dict):
     if 'network_mode' in service_dict:
         return {}
     networks = service_dict.get('networks', {'default': None})
-    return dict(
-        (net, (config or {}))
+    return {
+        net: (config or {})
         for net, config in networks.items()
-    )
+    }
 
 
 def get_network_names_for_service(service_dict):
@@ -328,4 +329,4 @@ def get_networks(service_dict, network_definitions):
     else:
         # Ensure Compose will pick a consistent primary network if no
         # priority is set
-        return OrderedDict(sorted(networks.items(), key=lambda t: t[0]))
+        return OrderedDict(sorted(networks.items(), key=itemgetter(0)))
