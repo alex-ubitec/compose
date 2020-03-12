@@ -108,19 +108,55 @@ def serialize_config(config, image_digests=None, escape_dollar=True):
 
 
 def serialize_ns_time_value(value):
+    """
+    Given a time in nanoseconds, return it formatted in the highest units
+    that doesn't require decimals to represent the string.
+
+
+    Arguments:
+        value {Union[float, int]} -- Time in nanoseconds.
+
+    Returns:
+        str -- Formatted string (ns, us, ms, s, m or h as units).
+
+    
+    Examples:
+
+    Note on 'float(18446746272732807168)', it is the floating point number '0b1011111100000000000000000000001'. 
+    We don't expect the result to be exact for float(N) for all N. 
+    That example is useful to assert the precision is indeed the maximum precision provided by floating point numbers.
+
+    >>> serialize_ns_time_value(1100.22222)
+    '1100ns'
+    >>> serialize_ns_time_value(float(4612251167404064768))
+    '4612251167404064768ns'
+    >>> serialize_ns_time_value(1040189672610790977)
+    '1040189672610790977ns'
+    >>> serialize_ns_time_value(1.1e4)
+    '11us'
+    >>> serialize_ns_time_value(1.01e8)
+    '101ms'
+    >>> serialize_ns_time_value(24*60*10**9)
+    '24m'
+    >>> serialize_ns_time_value(24*60*60*1e9)
+    '24h'
+    >>> serialize_ns_time_value(1000*60*60*10**9)
+    '1000h'
+    """
+    value = int(value)
     result = (value, 'ns')
     table = [
-        (1000., 'us'),
-        (1000., 'ms'),
-        (1000., 's'),
-        (60., 'm'),
-        (60., 'h')
+        (1000, 'us'),
+        (1000, 'ms'),
+        (1000, 's'),
+        (60, 'm'),
+        (60, 'h')
     ]
-    for stage in table:
-        tmp = value / stage[0]
-        if tmp == int(value / stage[0]):
+    for factor, unit in table:
+        tmp, reminder = divmod(value, factor)
+        if reminder == 0:
             value = tmp
-            result = (int(value), stage[1])
+            result = (value, unit)
         else:
             break
     return '{}{}'.format(*result)
